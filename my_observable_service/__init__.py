@@ -1,6 +1,10 @@
-from flask import Flask
-app = Flask(__name__)
+from werkzeug.wsgi import DispatcherMiddleware
+from prometheus_client import make_wsgi_app
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+from .hello_app import app as hello_app
+
+# Add prometheus wsgi middleware to route /metrics requests
+app = DispatcherMiddleware(hello_app, {
+    '/metrics': make_wsgi_app()
+})
+
