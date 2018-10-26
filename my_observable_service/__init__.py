@@ -1,10 +1,13 @@
-from werkzeug.wsgi import DispatcherMiddleware
-from prometheus_client import make_wsgi_app
+from flask import Flask
+from prometheus_flask_exporter import PrometheusMetrics
+import subprocess
 
-from .hello_app import app as hello_app
+app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
-# Add prometheus wsgi middleware to route /metrics requests
-app = DispatcherMiddleware(hello_app, {
-    '/metrics': make_wsgi_app()
-})
+my_version = subprocess.check_output(["git", "describe", "--always"]).strip()
+metrics.info('app_info', 'My observable service', version=my_version)
 
+@app.route("/")
+def hello():
+    return "Hello World!"

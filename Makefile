@@ -7,4 +7,4 @@ init:
 	pipenv install
 
 run:
-	pipenv run python -m my_observable_service
+	pipenv run env FLASK_APP=my_observable_service flask run
